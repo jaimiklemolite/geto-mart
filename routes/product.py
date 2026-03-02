@@ -141,6 +141,8 @@ def get_related_products(product_id):
             "offer_price": p.get("offer_price"),
             "original_price": p.get("original_price"),
             "discount_percent": p.get("discount_percent"),
+            "final_price": p.get("final_price"),
+            "is_discount_active": p.get("is_discount_active"),
             "image_url": (
                 p["images"][0]
                 if isinstance(p.get("images"), list) and p["images"]
@@ -426,18 +428,7 @@ def get_featured_products():
 
     for c in campaigns:
         p = c["product"]
-
-        discount = c.get("discount_percent", 0)
-
-        if discount > 0:
-            original_price = float(p["price"])
-            offer_price = round(original_price * (1 - discount / 100), 2)
-
-            p["original_price"] = original_price
-            p["offer_price"] = offer_price
-            p["discount_percent"] = discount
-        else:
-            p["original_price"] = p["price"]
+        p = apply_campaign_discount(p)
 
         category = mongo.db.category.find_one(
             {"_id": p.get("category_id")}
@@ -450,25 +441,6 @@ def get_featured_products():
         products.append(p)
 
     return jsonify(products)
-
-@product_bp.route("/new-arrivals", methods=["GET"])
-def get_new_arrivals():
-    products = list(
-        mongo.db.products.find()
-        .sort("created_at", -1)
-        .limit(8)
-    )
-
-    for p in products:
-        p["_id"] = str(p["_id"])
-
-        category = mongo.db.category.find_one(
-            {"_id": p.get("category_id")}
-        )
-
-        p["category"] = category["name"] if category else ""
-
-    return jsonify(products), 200
 
 @product_bp.route("/top-selling", methods=["GET"])
 def get_top_selling():
@@ -500,6 +472,7 @@ def get_top_selling():
     for pid in ordered_ids:
         if pid in product_map:
             product = product_map[pid]
+            product = apply_campaign_discount(product)
 
             category = mongo.db.category.find_one(
                 {"_id": product.get("category_id")}
@@ -511,3 +484,23 @@ def get_top_selling():
             sorted_products.append(product)
 
     return jsonify(sorted_products), 200
+
+@product_bp.route("/new-arrivals", methods=["GET"])
+def get_new_arrivals():
+    products = list(
+        mongo.db.products.find()
+        .sort("created_at", -1)
+        .limit(8)
+    )
+
+    for p in products:
+        p = apply_campaign_discount(p)
+        p["_id"] = str(p["_id"])
+
+        category = mongo.db.category.find_one(
+            {"_id": p.get("category_id")}
+        )
+
+        p["category"] = category["name"] if category else ""
+
+    return jsonify(products), 200

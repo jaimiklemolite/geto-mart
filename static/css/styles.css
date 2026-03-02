@@ -28,6 +28,9 @@ body > *:not(.app-footer) {
 
 /* MAIN HEADER */
 .main-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
@@ -231,16 +234,17 @@ body > *:not(.app-footer) {
 }
 
 .mini-card {
-  min-width: 220px;
+  width: 250px;
   flex-shrink: 0;
   cursor: pointer;
 }
 
 .mini-card img {
   width: 100%;
-  height: 150px;
+  height: 100%;
   object-fit: cover;
   border-radius: 10px;
+  display: block;
 }
 
 .mini-info {
@@ -261,6 +265,10 @@ body > *:not(.app-footer) {
 
 .mini-img-wrapper {
   position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 10px;
 }
 
 .stock-overlay {
@@ -1837,7 +1845,7 @@ select:focus {
 
 .order-items-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 16px;
   margin-top: 12px;
 }

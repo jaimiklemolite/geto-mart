@@ -22,7 +22,12 @@ def get_summary():
             "$group": {
                 "_id": None,
                 "net_revenue": {
-                    "$sum": {"$multiply": ["$items.price", "$items.qty"]}
+                    "$sum": {
+                        "$multiply": [
+                            {"$ifNull": ["$items.price_at_purchase", "$items.price"]},
+                            "$items.qty"
+                        ]
+                    }
                 },
                 "sold_items": {"$sum": "$items.qty"},
                 "orders": {"$addToSet": "$_id"}
@@ -56,7 +61,12 @@ def get_summary():
             "$group": {
                 "_id": None,
                 "gross_revenue": {
-                    "$sum": {"$multiply": ["$items.price", "$items.qty"]}
+                    "$sum": {
+                        "$multiply": [
+                            {"$ifNull": ["$items.price_at_purchase", "$items.price"]},
+                            "$items.qty"
+                        ]
+                    }
                 }
             }
         },
@@ -95,7 +105,12 @@ def revenue_growth():
         {
             "$project": {
                 "date": "$created_at",
-                "amount": {"$multiply": ["$items.price", "$items.qty"]}
+                "amount": {
+                    "$multiply": [
+                        {"$ifNull": ["$items.price_at_purchase", "$items.price"]},
+                        "$items.qty"
+                    ]
+                }
             }
         }
     ]
@@ -146,7 +161,12 @@ def sales_trend():
                     }
                 },
                 "revenue": {
-                    "$sum": {"$multiply": ["$items.price", "$items.qty"]}
+                    "$sum": {
+                        "$multiply": [
+                            {"$ifNull": ["$items.price_at_purchase", "$items.price"]},
+                            "$items.qty"
+                        ]
+                    }
                 }
             }
         },
@@ -223,7 +243,12 @@ def category_revenue():
             "$group": {
                 "_id": "$cat.name",
                 "revenue": {
-                    "$sum": {"$multiply": ["$items.price", "$items.qty"]}
+                    "$sum": {
+                        "$multiply": [
+                            {"$ifNull": ["$items.price_at_purchase", "$items.price"]},
+                            "$items.qty"
+                        ]
+                    }
                 }
             }
         },

@@ -42,23 +42,7 @@ function loadCart() {
 
             <div class="cart-info">
               <h4>${item.name}</h4>
-              <div class="price">
-                ${
-                  item.offer_price
-                    ? `
-                      <span class="offer-price">
-                        ₹${item.offer_price.toLocaleString("en-IN")}
-                      </span>
-                      <span class="original-price">
-                        ₹${item.original_price.toLocaleString("en-IN")}
-                      </span>
-                      <span class="discount-badge">
-                        ${item.discount_percent}% OFF
-                      </span>
-                    `
-                    : `₹ ${item.price?.toLocaleString("en-IN") || 0}`
-                }
-              </div>
+              <div class="price">${renderPriceHTML(item)}</div>
 
               <div class="cart-actions">
                 <button

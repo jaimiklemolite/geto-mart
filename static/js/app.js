@@ -1,6 +1,7 @@
 const IS_ADMIN = window.USER_ROLE === "admin";
 const IS_ADMIN_PRODUCTS_PAGE = location.pathname.startsWith("/admin");
 const IS_DASHBOARD_PAGE = location.pathname === "/dashboard";
+let lastProductPriceMap = {};
 
 // UTILITIES (Titlecase, Price Rendering, Toast MSG)
 function titleCase(str) {
@@ -34,6 +35,24 @@ function renderPriceHTML(p) {
     `;
   }
   return `₹${p.price.toLocaleString("en-IN")}`;
+}
+
+function syncCampaignPrices(products) {
+  products.forEach(p => {
+
+    const priceEl =
+      document.getElementById(`price-${p._id}`);
+
+    if (!priceEl) return;
+
+    const newHTML = renderPriceHTML(p);
+
+    if (lastProductPriceMap[p._id] === newHTML) return;
+
+    priceEl.innerHTML = newHTML;
+
+    lastProductPriceMap[p._id] = newHTML;
+  });
 }
 
 function showToast(message, type = "info", duration = 3000, persist = false) {
@@ -398,9 +417,7 @@ function renderProducts(list, showAdmin = false, isAdminView = false) {
               : `<div class="stock-label in-stock">In Stock (${p.quantity})</div>`
           }
 
-          <div class="price">
-            ${renderPriceHTML(p)}
-          </div>
+          <div class="price" id="price-${p._id}">${renderPriceHTML(p)}</div>
 
           <div class="product-actions">
             <button onclick="viewProduct('${p._id}')">View</button>
@@ -1514,7 +1531,6 @@ let campaignCache = [];
 let currentCampaignTab = "ALL";
 
 function loadCampaignCategories() {
-
   fetch("/api/categories")
     .then(res => res.json())
     .then(categories => {
@@ -1584,7 +1600,7 @@ function createCampaign() {
   const end =
     document.getElementById("campaignEnd").value;
 
-  if (!category || !product || !discount || !start || !end) {
+  if (!category || !product || !start || !end) {
     showToast("Fill All Campaign Fields", "info");
     return;
   }
@@ -1624,7 +1640,6 @@ function resetCampaignForm() {
 }
 
 function loadCampaigns() {
-
   fetch("/api/products/campaigns", { credentials: "include" })
     .then(res => res.json())
     .then(data => {
@@ -1783,25 +1798,16 @@ function startCampaignCountdown() {
         let diff;
         let label = "";
 
-        /* ---------------------------
-          SCHEDULED → Starts In
-        ----------------------------*/
         if (now < start) {
           diff = start.getTime() - now.getTime();
           label = "Starts in";
         }
 
-        /* ---------------------------
-          LIVE → Ends In
-        ----------------------------*/
         else if (now >= start && now <= end) {
           diff = end.getTime() - now.getTime();
           label = "Ends in";
         }
 
-        /* ---------------------------
-          EXPIRED
-        ----------------------------*/
         else {
           el.innerText = "Ended";
 
@@ -1860,15 +1866,13 @@ function stopCampaign(id) {
   );
 }
 
-
-/* ------------------------------
-   EDIT (PLACEHOLDER)
------------------------------- */
 function editCampaign(id) {
   showToast("Edit Campaign Coming Soon", "info");
 }
 
 let featuredHTMLCache = "";
+let topProductsHTMLCache = "";
+let newArrivalsHTMLCache = "";
 
 function loadFeaturedProducts() {
   fetch("/api/products/featured")
@@ -1898,23 +1902,7 @@ function loadFeaturedProducts() {
           <div class="editorial-info">
             <h4>${p.name}</h4>
             <div class="category">${titleCase(p.category)}</div>
-            <div class="price">
-              ${
-                p.offer_price
-                  ? `
-                    <span class="offer-price">
-                      ₹${p.offer_price.toLocaleString("en-IN")}
-                    </span>
-                    <span class="original-price">
-                      ₹${p.original_price.toLocaleString("en-IN")}
-                    </span>
-                    <span class="discount-badge">
-                      ${p.discount_percent}% OFF
-                    </span>
-                  `
-                  : `₹${p.price.toLocaleString("en-IN")}`
-              }
-            </div>
+            <div class="price">${renderPriceHTML(p)}</div>
           </div>
         </div>
       `).join("");
@@ -1969,28 +1957,55 @@ function loadTopProducts() {
   fetch("/api/products/top-selling")
     .then(res => res.json())
     .then(data => {
+
       const container = document.getElementById("topProducts");
       if (!container) return;
 
-      container.innerHTML = data.map(p => `
-        <div class="mini-card ${p.quantity === 0 ? 'sold-out' : ''}"
-            onclick="${p.quantity === 0 ? '' : `viewProduct('${p._id}')`}">
+      if (!container.dataset.initialized) {
 
-          <div class="mini-img-wrapper">
-            <img src="${p.image_url || p.images?.[0]}">
+        container.innerHTML = data.map(p => `
+          <div class="mini-card ${p.quantity === 0 ? 'sold-out' : ''}"
+               data-product-id="${p._id}"
+               onclick="${p.quantity === 0 ? '' : `viewProduct('${p._id}')`}">
 
-            ${p.quantity === 0 ? `
-              <div class="stock-overlay">Out Of Stock</div>
-            ` : ``}
+            <div class="mini-img-wrapper">
+              <img src="${p.image_url || p.images?.[0]}">
+
+              ${p.quantity === 0
+                ? `<div class="stock-overlay">Out Of Stock</div>`
+                : ``}
+            </div>
+
+            <div class="mini-info">
+              <div>${p.name}</div>
+              <div class="category">${titleCase(p.category)}</div>
+
+              <div class="price"
+                   id="top-price-${p._id}">
+                ${renderPriceHTML(p)}
+              </div>
+
+            </div>
           </div>
+        `).join("");
 
-          <div class="mini-info">
-            <div>${p.name}</div>
-            <div class="category">${titleCase(p.category)}</div>
-            <div class="price">₹${p.price.toLocaleString("en-IN")}</div>
-          </div>
-        </div>
-      `).join("");
+        container.dataset.initialized = "true";
+        return;
+      }
+
+      data.forEach(p => {
+
+        const priceEl =
+          document.getElementById(`top-price-${p._id}`);
+
+        if (!priceEl) return;
+
+        const newHTML = renderPriceHTML(p);
+
+        if (priceEl.innerHTML !== newHTML) {
+          priceEl.innerHTML = newHTML;
+        }
+      });
     });
 }
 
@@ -2009,12 +2024,15 @@ function loadNewArrivals() {
             <h4>${p.name}</h4>
             <div class="category">${titleCase(p.category)}</div>
             <div class="category">${p.description}</div>
-            <div class="price">
-              ₹${p.price.toLocaleString("en-IN")}
-            </div>
+            <div class="price">${renderPriceHTML(p)}</div>
           </div>
         </div>
       `).join("");
+
+      if (newHTML === topProductsHTMLCache) return;
+
+      topProductsHTMLCache = newHTML;
+      container.innerHTML = newHTML;
     });
 }
 
@@ -2074,24 +2092,24 @@ document.addEventListener("DOMContentLoaded", () => {
     startFeaturedCountdown();
     loadTopProducts();
     loadNewArrivals();
-    
+
     setInterval(() => {
+      loadTopProducts();
+      loadNewArrivals();
       loadFeaturedProducts();
     }, 10000);
+
     setInterval(async () => {
-      const res = await fetch("/api/products/");
-      const data = await res.json();
+      try {
+        const res = await fetch("/api/products/");
+        const data = await res.json();
 
-      const newData = JSON.stringify(data);
-      const oldData = JSON.stringify(productCache);
+        syncCampaignPrices(data);
 
-      if (newData !== oldData) {
         productCache = data;
-        renderProducts(
-          productCache,
-          IS_ADMIN_PRODUCTS_PAGE,
-          IS_DASHBOARD_PAGE && IS_ADMIN
-        );
+
+      } catch (err) {
+        console.error("Live price sync failed:", err);
       }
     }, 10000);
   }

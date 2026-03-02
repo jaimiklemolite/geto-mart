@@ -1,4 +1,6 @@
 let CURRENT_STOCK = 0;
+let LAST_PRODUCT_HASH = null;
+let LAST_RELATED_HASH = null;
 
 function titleCase(str) {
   if (!str) return "";
@@ -16,6 +18,17 @@ function loadProductDetails(productId) {
       return res.json();
     })
     .then(product => {
+      const newHash = JSON.stringify({
+        price: product.final_price,
+        campaign: product.is_discount_active,
+        stock: product.quantity
+      });
+
+      if (LAST_PRODUCT_HASH === newHash) {
+        return;
+      }
+
+      LAST_PRODUCT_HASH = newHash;
 
       const p = product;
       CURRENT_STOCK = p.quantity ?? 0;
@@ -34,7 +47,14 @@ function loadProductDetails(productId) {
       }
 
       document.getElementById("pd-name").textContent = p.name;
-      document.getElementById("pd-price").innerHTML = renderPriceHTML(p);
+
+      const priceEl = document.getElementById("pd-price");
+      const newHTML = renderPriceHTML(p);
+
+      if (priceEl.innerHTML !== newHTML) {
+        priceEl.innerHTML = newHTML;
+      }
+
       document.getElementById("pd-description").textContent = p.description;
       document.getElementById("pd-category").textContent = titleCase(p.category);
 
@@ -321,6 +341,20 @@ function loadRelatedProducts(productId) {
     .then(data => {
       if (!data || !data.products || !data.products.length) return;
 
+      const newHash = JSON.stringify(
+        data.products.map(p => ({
+          id: p.id,
+          price: p.final_price,
+          campaign: p.is_discount_active
+        }))
+      );
+
+      if (LAST_RELATED_HASH === newHash) {
+        return;
+      }
+
+      LAST_RELATED_HASH = newHash;
+
       const container = document.getElementById("relatedProducts");
       if (!container) return;
 
@@ -341,9 +375,7 @@ function loadRelatedProducts(productId) {
 
           <div class="product-details">
             <h4>${p.name}</h4>
-            <div class="price">
-              ${renderPriceHTML(p)}
-            </div>
+            <div class="price">${renderPriceHTML(p)}</div>
 
             <div class="product-actions">
               <button onclick="viewProduct('${p.id}')">
@@ -397,4 +429,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   loadProductDetails(productId);
   loadRelatedProducts(productId);
+
+  setInterval(() => {
+    loadProductDetails(productId);
+    loadRelatedProducts(productId);
+  }, 10000);
 });
