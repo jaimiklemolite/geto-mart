@@ -40,7 +40,22 @@
     <div class="section-header">
       <h2>Featured Products</h2>
     </div>
-    <div id="featuredProducts" class="featured-grid"></div>
+    <div class="editorial-wrapper">
+
+      <button class="featured-arrow left"
+              onclick="moveFeatured(-1)">
+        <i class="fa fa-chevron-left"></i>
+      </button>
+
+      <div id="featuredProducts" class="featured-grid"></div>
+      
+      <button class="featured-arrow right"
+              onclick="moveFeatured(1)">
+        <i class="fa fa-chevron-right"></i>
+      </button>
+
+    </div>
+
   </section>
 
   <section class="home-section alt-section">

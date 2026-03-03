@@ -28,9 +28,9 @@ body > *:not(.app-footer) {
 
 /* MAIN HEADER */
 .main-header {
-  position: sticky;
+  /* position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: 1000; */
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
@@ -157,9 +157,7 @@ body > *:not(.app-footer) {
   background: #e5e7eb;
 }
 
-/* -------------------- */
 /* SECTION STRUCTURE */
-/* -------------------- */
 .home-section {
   margin: 70px 0;
 }
@@ -181,13 +179,54 @@ body > *:not(.app-footer) {
   font-weight: 700;
 }
 
-/* -------------------- */
 /* FEATURED SECTION */
-/* -------------------- */
+/* ============================= */
+/* FEATURED PRODUCTS CAROUSEL */
+/* ============================= */
+
+.editorial-wrapper {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
 .featured-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
+  display: flex;
   gap: 20px;
+  transition: transform 0.5s ease;
+  will-change: transform;
+}
+
+.featured-grid .editorial-card {
+  flex: 0 0 320px;
+  min-width: 320px;
+}
+
+/* Arrows */
+.featured-arrow {
+  position: absolute;
+  top: 40%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.5);
+  border: none;
+  color: #fff;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 5;
+}
+
+.featured-arrow.left {
+  left: 5px;
+}
+
+.featured-arrow.right {
+  right: 5px;
+}
+
+.featured-arrow:hover {
+  background: #ff9900;
 }
 
 .featured-card {
@@ -214,9 +253,7 @@ body > *:not(.app-footer) {
   color: white;
 }
 
-/* -------------------- */
 /* TOP SELLING */
-/* -------------------- */
 .horizontal-scroll {
   display: flex;
   gap: 16px;
@@ -284,9 +321,7 @@ body > *:not(.app-footer) {
   letter-spacing: 0.5px;
 }
 
-/* -------------------- */
 /* NEW ARRIVALS */
-/* -------------------- */
 .editorial-grid {
   display: flex;
   gap: 30px;
@@ -319,29 +354,69 @@ body > *:not(.app-footer) {
 
 /* LIMITED BADGE */
 .limited-badge{
-  position:absolute;
-  top:8px;
-  left:8px;
-  background:#ef4444;
-  color:#fff;
-  font-size:11px;
-  font-weight:600;
-  padding:4px 8px;
-  border-radius:6px;
-  z-index:2;
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+  z-index: 2;
 }
 
 /* COUNTDOWN */
 .featured-countdown{
-  position:absolute;
-  bottom:8px;
-  left:8px;
-  background:rgba(0,0,0,0.75);
-  color:#fff;
-  font-size:11px;
-  padding:4px 8px;
-  border-radius:6px;
-  font-weight:600;
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  background: rgba(0,0,0,0.75);
+  color: #fff;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+/* Normal timer */
+#pd-timer {
+  position: static !important;
+  margin-top: 8px;
+  display: inline-block;
+}
+
+.countdown,
+.featured-countdown {
+  transition: all 0.3s ease;
+}
+
+/* Less than 1 hour */
+.timer-warning {
+  border-radius: 3px;
+  background: #ff4d4d !important;
+  color: white !important;
+}
+
+/* Less than 10 minutes */
+.timer-critical {
+  border-radius: 3px;
+  background: #ff0000 !important;
+  color: white !important;
+  animation: pulseTimer 1s infinite;
+}
+
+/* Expired */
+.timer-ended {
+  background: #444 !important;
+  color: #ccc !important;
+}
+
+/* Pulse Animation */
+@keyframes pulseTimer {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.05); }
+  100% { transform: scale(1); }
 }
 
 .editorial-info {
@@ -384,9 +459,7 @@ body > *:not(.app-footer) {
   margin-bottom: 3px;
 }
 
-/* -------------------- */
 /* MINIMAL ARROWS STYLE */
-/* -------------------- */
 .editorial-wrapper {
   position: relative;
 }

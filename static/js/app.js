@@ -1093,7 +1093,7 @@ function filterByCategory(categoryName) {
   updateResultsCount(filtered.length, true);
   updateResetButtonVisibility("mainDashboard");
 
-  window.scrollTo({ top: 2400, behavior: "smooth" });
+  window.scrollTo({ top: 2350, behavior: "smooth" });
 }
 
 function loadDashboardCategories() {
@@ -1593,6 +1593,8 @@ function createCampaign() {
     document.getElementById("campaignProduct").value;
   const title =
     document.getElementById("campaignTitle").value;
+  const priority =
+    document.getElementById("campaignPriority").value;
   const discount =
     document.getElementById("campaignDiscount").value || 0;
   const start =
@@ -1600,7 +1602,7 @@ function createCampaign() {
   const end =
     document.getElementById("campaignEnd").value;
 
-  if (!category || !product || !start || !end) {
+  if (!category || !product || !priority || !start || !end) {
     showToast("Fill All Campaign Fields", "info");
     return;
   }
@@ -1612,7 +1614,7 @@ function createCampaign() {
     body: JSON.stringify({
       product_id: product,
       title,
-      priority: "MEDIUM",
+      priority: priority,
       discount_percent: Number(discount),
       start: new Date(start).toISOString(),
       end: new Date(end).toISOString()
@@ -1637,6 +1639,12 @@ function resetCampaignForm() {
     const el = document.getElementById(id);
     if (el) el.value = "";
   });
+
+  const priorityEl =
+    document.getElementById("campaignPriority");
+  if (priorityEl) {
+    priorityEl.value = "MEDIUM";
+  }
 }
 
 function loadCampaigns() {
@@ -1822,11 +1830,30 @@ function startCampaignCountdown() {
         } 
 
         const totalSeconds = Math.floor(diff / 1000);
-        const h = Math.floor(totalSeconds / 3600);
-        const m = Math.floor((totalSeconds % 3600) / 60);
-        const s = totalSeconds % 60;
 
-        el.innerText = `${label}: ${h}h ${m}m ${s}s`;
+        const days = Math.floor(totalSeconds / 86400);
+        const hours = Math.floor((totalSeconds % 86400) / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
+        el.classList.remove("timer-warning", "timer-critical", "timer-ended");
+
+        const pad = n => String(n).padStart(2, "0");
+        if (days > 0) {
+          el.innerText = `${label}: ${pad(days)}d ${pad(hours)}h ${pad(minutes)}m`;
+        } else {
+          el.innerText = `${label}: ${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
+        }
+
+        if (totalSeconds <= 0) {
+          el.classList.add("timer-ended");
+        }
+        else if (totalSeconds <= 600) {
+          el.classList.add("timer-critical");
+        }
+        else if (totalSeconds <= 3600) {
+          el.classList.add("timer-warning");
+        }
 
         const newStatus = getCampaignStatus(campaign);
 
@@ -1917,8 +1944,93 @@ function loadFeaturedProducts() {
         container.innerHTML = newHTML;
         container.style.opacity = "1";
         startFeaturedCountdown();
+        initFeaturedCarousel();
       }, 200);
     });
+}
+
+/* ============================= */
+/* FEATURED CAROUSEL LOGIC */
+/* ============================= */
+
+let featuredIndex = 0;
+let featuredInterval = null;
+
+function updateFeaturedPosition() {
+  const container =
+    document.getElementById("featuredProducts");
+
+  const cards =
+    document.querySelectorAll("#featuredProducts .editorial-card");
+
+  if (!container || !cards.length) return;
+
+  const cardWidth = cards[0].offsetWidth + 20;
+
+  container.style.transform =
+    `translateX(-${featuredIndex * cardWidth}px)`;
+}
+
+function moveFeatured(direction) {
+  const cards =
+    document.querySelectorAll("#featuredProducts .editorial-card");
+
+  if (!cards.length) return;
+
+  featuredIndex += direction;
+
+  if (featuredIndex < 0)
+    featuredIndex = cards.length - 1;
+
+  if (featuredIndex >= cards.length)
+    featuredIndex = 0;
+
+  updateFeaturedPosition();
+}
+
+function startFeaturedAutoSlide() {
+  if (featuredInterval)
+    clearInterval(featuredInterval);
+
+  featuredInterval = setInterval(() => {
+    moveFeatured(1);
+  }, 4000);
+}
+
+function initFeaturedCarousel() {
+
+  featuredIndex = 0;
+  updateFeaturedPosition();
+  startFeaturedAutoSlide();
+
+  const container =
+    document.getElementById("featuredProducts");
+
+  if (!container) return;
+
+  container.addEventListener("mouseenter", () => {
+    clearInterval(featuredInterval);
+  });
+
+  container.addEventListener("mouseleave", () => {
+    startFeaturedAutoSlide();
+  });
+
+  let startX = 0;
+
+  container.addEventListener("touchstart", e => {
+    startX = e.touches[0].clientX;
+  });
+
+  container.addEventListener("touchend", e => {
+    let endX = e.changedTouches[0].clientX;
+
+    if (startX - endX > 50)
+      moveFeatured(1);
+
+    if (endX - startX > 50)
+      moveFeatured(-1);
+  });
 }
 
 function startFeaturedCountdown() {
@@ -1939,17 +2051,33 @@ function startFeaturedCountdown() {
           return;
         }
 
-        const total = Math.floor(diff / 1000);
+        const totalSeconds = Math.floor(diff / 1000);
 
-        const h = Math.floor(total / 3600);
-        const m = Math.floor((total % 3600) / 60);
-        const s = total % 60;
+        const days = Math.floor(totalSeconds / 86400);
+        const hours = Math.floor((totalSeconds % 86400) / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
+        el.classList.remove("timer-warning", "timer-critical", "timer-ended");
 
         const pad = n => String(n).padStart(2, "0");
+        if (days > 0) {
+          el.innerText = `Ends in ${pad(days)}d ${pad(hours)}h ${pad(minutes)}m`;
+        } else {
+          el.innerText = `Ends in ${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
+        }
 
-        el.innerText = `Ends in ${pad(h)}h ${pad(m)}m ${pad(s)}s`;
+        if (totalSeconds <= 0) {
+          el.innerText = "Offer Ended";
+          el.classList.add("timer-ended");
+        }
+        else if (totalSeconds <= 600) {
+          el.classList.add("timer-critical");
+        }
+        else if (totalSeconds <= 3600) {
+          el.classList.add("timer-warning");
+        }
       });
-
   }, 1000);
 }
 
@@ -2089,7 +2217,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (location.pathname === "/dashboard") {
     loadFeaturedProducts();
-    startFeaturedCountdown();
     loadTopProducts();
     loadNewArrivals();
 

@@ -50,10 +50,78 @@ function loadProductDetails(productId) {
 
       const priceEl = document.getElementById("pd-price");
       const newHTML = renderPriceHTML(p);
-
       if (priceEl.innerHTML !== newHTML) {
         priceEl.innerHTML = newHTML;
       }
+
+      const timerEl = document.getElementById("pd-timer");
+
+      if (timerEl) {
+        timerEl.classList.remove(
+          "hidden",
+          "timer-warning",
+          "timer-critical",
+          "timer-ended"
+        );
+
+        if (p.is_discount_active && p.campaign_end) {
+
+          timerEl.classList.remove("hidden");
+
+          const endTime = new Date(p.campaign_end + "Z");
+
+          function updateProductTimer() {
+
+            const now = new Date();
+            let diff = endTime - now;
+
+            if (diff <= 0) {
+              timerEl.innerText = "Offer Ended";
+              timerEl.classList.add("timer-ended");
+              return;
+            }
+
+            const totalSeconds = Math.floor(diff / 1000);
+
+            const days = Math.floor(totalSeconds / 86400);
+            const hours = Math.floor((totalSeconds % 86400) / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+
+            const pad = n => String(n).padStart(2, "0");
+
+            if (days > 0) {
+              timerEl.innerText = `Ends in ${pad(days)}d ${pad(hours)}h ${pad(minutes)}m`;
+            } else {
+              timerEl.innerText =
+                `Ends in ${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
+            }
+
+            timerEl.classList.remove(
+              "timer-warning",
+              "timer-critical"
+            );
+
+            if (totalSeconds <= 600) {
+              timerEl.classList.add("timer-critical");
+            }
+            else if (totalSeconds <= 3600) {
+              timerEl.classList.add("timer-warning");
+            }
+          }
+
+          updateProductTimer();
+
+          if (!window.PRODUCT_TIMER_INTERVAL) {
+            window.PRODUCT_TIMER_INTERVAL =
+              setInterval(updateProductTimer, 1000);
+          }
+
+        } else {
+          timerEl.classList.add("hidden");
+        }
+      }
+
 
       document.getElementById("pd-description").textContent = p.description;
       document.getElementById("pd-category").textContent = titleCase(p.category);

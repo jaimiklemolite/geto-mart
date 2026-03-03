@@ -100,13 +100,25 @@ def get_products():
 
 @product_bp.route("/<product_id>", methods=["GET"])
 def get_single_product(product_id):
-    
+    now = datetime.utcnow()
     product = mongo.db.products.find_one({"_id": ObjectId(product_id)})
 
     if not product:
         return jsonify({"message": "Product not found"}), 404
-    
+
     product = apply_campaign_discount(product)
+
+    campaign = mongo.db.campaigns.find_one({
+        "product_id": ObjectId(product_id),
+        "start": {"$lte": now},
+        "end": {"$gte": now}
+    })
+
+    if campaign:
+        product["campaign_end"] = campaign["end"].isoformat()
+    else:
+        product["campaign_end"] = None
+
     product["_id"] = str(product["_id"])
 
     if "category_id" in product:
@@ -314,20 +326,22 @@ def create_campaign():
     data = request.get_json()
 
     product_id = data.get("product_id")
+    priority = data.get("priority", "MEDIUM")
+    if priority not in ["LOW", "MEDIUM", "HIGH"]:
+        priority = "MEDIUM"
+    title = data.get("title")
+    discount_percent = float(data.get("discount_percent", 0))
     start = data.get("start")
     end = data.get("end")
-    title = data.get("title")
-    priority = data.get("priority", "MEDIUM")
-    discount_percent = float(data.get("discount_percent", 0))
 
     if not product_id or not start or not end:
         return jsonify({"message": "Missing fields"}), 400
 
     mongo.db.campaigns.insert_one({
         "product_id": ObjectId(product_id),
-        "title": title or "Featured Campaign",
         "priority": priority,
         "discount_percent": discount_percent,
+        "title": title or "Featured Campaign",
         "start": datetime.fromisoformat(start),
         "end": datetime.fromisoformat(end),
         "created_at": datetime.utcnow()
@@ -405,11 +419,32 @@ def stop_campaign(cid):
 @product_bp.route("/featured", methods=["GET"])
 def get_featured_products():
     now = datetime.utcnow()
+
     pipeline = [
         {
             "$match": {
                 "start": {"$lte": now},
                 "end": {"$gte": now}
+            }
+        },
+        {
+            "$addFields": {
+                "priority_order": {
+                    "$switch": {
+                        "branches": [
+                            {"case": {"$eq": ["$priority", "HIGH"]}, "then": 1},
+                            {"case": {"$eq": ["$priority", "MEDIUM"]}, "then": 2},
+                            {"case": {"$eq": ["$priority", "LOW"]}, "then": 3}
+                        ],
+                        "default": 4
+                    }
+                }
+            }
+        },
+        {
+            "$sort": {
+                "priority_order": 1,
+                "start": -1
             }
         },
         {

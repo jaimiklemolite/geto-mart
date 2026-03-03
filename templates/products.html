@@ -181,12 +181,12 @@
       </div>
 
       <div class="campaign-card">
-        <span>Scheduled</span>
+        <span>Scheduled Campaigns</span>
         <b id="scheduledCampaignCount">0</b>
       </div>
 
       <div class="campaign-card">
-        <span>Expired</span>
+        <span>Expired Campaigns</span>
         <b id="expiredCampaignCount">0</b>
       </div>
     </div>
@@ -202,6 +202,12 @@
         <option value="">Select Product</option>
       </select>
 
+      <select id="campaignPriority">
+        <option value="LOW">Low</option>
+        <option value="MEDIUM" selected>Medium</option>
+        <option value="HIGH">High</option>
+      </select>
+      
       <input type="text"
             id="campaignTitle"
             placeholder="Campaign Title">
