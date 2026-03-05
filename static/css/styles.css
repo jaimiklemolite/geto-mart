@@ -180,10 +180,6 @@ body > *:not(.app-footer) {
 }
 
 /* FEATURED SECTION */
-/* ============================= */
-/* FEATURED PRODUCTS CAROUSEL */
-/* ============================= */
-
 .editorial-wrapper {
   position: relative;
   overflow: hidden;
@@ -198,8 +194,8 @@ body > *:not(.app-footer) {
 }
 
 .featured-grid .editorial-card {
-  flex: 0 0 320px;
-  min-width: 320px;
+  flex: 0 0 calc((100% - 60px) / 4);
+  min-width: calc((100% - 60px) / 4);
 }
 
 /* Arrows */
@@ -271,9 +267,43 @@ body > *:not(.app-footer) {
 }
 
 .mini-card {
+  position: relative;
+  overflow: visible;
   width: 250px;
   flex-shrink: 0;
   cursor: pointer;
+}
+
+.mini-card:hover .top-badge {
+  transform: translate(-2px);
+}
+
+/* ribbon */
+.top-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 20px;
+  color: #fff;
+  backdrop-filter: blur(4px);
+  background: rgba(0,0,0,0.6);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+/* subtle color accents */
+.top-badge.gold {
+  background: rgba(201,162,39,0.65);
+}
+
+.top-badge.silver {
+  background: rgba(70,110,200,0.65);
+}
+
+.top-badge.bronze {
+  background: rgba(201,134,70,0.65);
 }
 
 .mini-card img {
@@ -1264,7 +1294,7 @@ select:focus {
 
 /* PRODUCT DETAILS */
 .product-details {
-  padding: 14px;
+  padding: 12px;
 }
 
 .product-details h4 {

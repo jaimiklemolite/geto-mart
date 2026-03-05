@@ -24,15 +24,15 @@
   <div class="header-right">
 
     {% if session.role != "admin" %}
-    <div class="icon-btn" onclick="location.href='/cart'" title="Cart">
-      Cart <i class="fa-solid fa-shopping-cart"></i>
-      <span id="cartCount" class="icon-count hidden">0</span>
-    </div>
+      <div class="icon-btn" onclick="location.href='/cart'" title="Cart">
+        Cart <i class="fa-solid fa-shopping-cart"></i>
+        <span id="cartCount" class="icon-count hidden">0</span>
+      </div>
 
-    <div class="icon-btn" onclick="location.href='/wishlist'" title="Wishlist">
-      WishList <i class="fa-solid fa-heart"></i>
-      <span id="wishlistCount" class="icon-count hidden">0</span>
-    </div>
+      <div class="icon-btn" onclick="location.href='/wishlist'" title="Wishlist">
+        WishList <i class="fa-solid fa-heart"></i>
+        <span id="wishlistCount" class="icon-count hidden">0</span>
+      </div>
     {% endif %}
 
     <div class="icon-btn profile-menu">
@@ -46,9 +46,9 @@
         </a>
 
         {% if session.role != "admin" %}
-        <a href="/orders">
-          <i class="fa-solid fa-truck"></i> Orders
-        </a>
+          <a href="/orders">
+            <i class="fa-solid fa-truck"></i> Orders
+          </a>
         {% endif %}
 
         <a href="#" onclick="logout()">

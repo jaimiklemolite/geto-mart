@@ -71,6 +71,7 @@ def add_product():
         "images": image_urls,
         "image_url": image_urls[0],
         "quantity": 0,
+        "sales_count": 0,
         "specs": specs,
         "details": details,
         "created_at": now
@@ -479,46 +480,29 @@ def get_featured_products():
 
 @product_bp.route("/top-selling", methods=["GET"])
 def get_top_selling():
-    pipeline = [
-        {"$unwind": "$items"},
-        {"$group": {
-            "_id": "$items.product_id",
-            "totalSold": {"$sum": "$items.qty"}
-        }},
-        {"$sort": {"totalSold": -1}},
-        {"$limit": 8}
-    ]
-
-    top = list(mongo.db.orders.aggregate(pipeline))
-
-    if not top:
-        return jsonify([]), 200
-
-    ordered_ids = [p["_id"] for p in top]
-
     products = list(
-        mongo.db.products.find({"_id": {"$in": ordered_ids}})
+        mongo.db.products.find()
+        .sort("sales_count", -1)
+        .limit(8)
     )
 
-    product_map = {p["_id"]: p for p in products}
+    result = []
+    for product in products:
 
-    sorted_products = []
+        product = apply_campaign_discount(product)
 
-    for pid in ordered_ids:
-        if pid in product_map:
-            product = product_map[pid]
-            product = apply_campaign_discount(product)
+        category = mongo.db.category.find_one(
+            {"_id": product.get("category_id")}
+        )
 
-            category = mongo.db.category.find_one(
-                {"_id": product.get("category_id")}
-            )
+        product["_id"] = str(product["_id"])
+        product["category"] = category["name"] if category else ""
 
-            product["_id"] = str(product["_id"])
-            product["category"] = category["name"] if category else ""
+        product["total_sold"] = product.get("sales_count", 0)
 
-            sorted_products.append(product)
+        result.append(product)
 
-    return jsonify(sorted_products), 200
+    return jsonify(result), 200
 
 @product_bp.route("/new-arrivals", methods=["GET"])
 def get_new_arrivals():

@@ -187,6 +187,12 @@ def update_order_status(order_id):
     if new_status == "Delivered":
         update_data["delivered_at"] = now
 
+        for item in order.get("items", []):
+            mongo.db.products.update_one(
+                {"_id": ObjectId(item["product_id"])},
+                {"$inc": {"sales_count": item.get("qty", 0)}}
+            )
+
     mongo.db.orders.update_one(
         {"_id": ObjectId(order_id)},
         {"$set": update_data}

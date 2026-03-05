@@ -460,6 +460,9 @@ function renderProducts(list, showAdmin = false, isAdminView = false) {
       </div>
     `;
   }).join("");
+  if (!IS_ADMIN) {
+    loadWishlistHearts();
+  }
 }
 
 function slideProductImage(productId, direction) {
@@ -1523,9 +1526,7 @@ function getTabFromURL(defaultTab) {
   return params.get("tab") || defaultTab;
 }
 
-/* ======================================================
-   CAMPAIGN MODULE (FINAL VERSION)
-====================================================== */
+// CAMPAIGN MODULE (CREATE, LOAD CAMPAIGN)
 let campaignTimer = null;
 let campaignCache = [];
 let currentCampaignTab = "ALL";
@@ -1875,7 +1876,6 @@ function startCampaignCountdown() {
 }
 
 function stopCampaign(id) {
-
   showConfirm(
     "Stop Campaign",
     "Stop this campaign now?",
@@ -1897,9 +1897,12 @@ function editCampaign(id) {
   showToast("Edit Campaign Coming Soon", "info");
 }
 
+// LOAD FEATURED PRODUCTS
 let featuredHTMLCache = "";
 let topProductsHTMLCache = "";
 let newArrivalsHTMLCache = "";
+let featuredIndex = 0;
+let featuredInterval = null;
 
 function loadFeaturedProducts() {
   fetch("/api/products/featured")
@@ -1943,18 +1946,21 @@ function loadFeaturedProducts() {
       setTimeout(() => {
         container.innerHTML = newHTML;
         container.style.opacity = "1";
+
+        const arrows =
+          document.querySelectorAll(".featured-arrow");
+
+        if (data.length <= 4) {
+          arrows.forEach(a => a.style.display = "none");
+        } else {
+          arrows.forEach(a => a.style.display = "block");
+        }
+
         startFeaturedCountdown();
         initFeaturedCarousel();
       }, 200);
     });
 }
-
-/* ============================= */
-/* FEATURED CAROUSEL LOGIC */
-/* ============================= */
-
-let featuredIndex = 0;
-let featuredInterval = null;
 
 function updateFeaturedPosition() {
   const container =
@@ -1977,18 +1983,25 @@ function moveFeatured(direction) {
 
   if (!cards.length) return;
 
+  const maxVisible = 4;
+  const maxIndex = Math.max(0, cards.length - maxVisible);
+
   featuredIndex += direction;
 
   if (featuredIndex < 0)
-    featuredIndex = cards.length - 1;
-
-  if (featuredIndex >= cards.length)
+    featuredIndex = maxIndex;
+  if (featuredIndex > maxIndex)
     featuredIndex = 0;
 
   updateFeaturedPosition();
 }
 
 function startFeaturedAutoSlide() {
+  const cards =
+    document.querySelectorAll("#featuredProducts .editorial-card");
+
+  if (cards.length <= 4) return;
+
   if (featuredInterval)
     clearInterval(featuredInterval);
 
@@ -1998,7 +2011,6 @@ function startFeaturedAutoSlide() {
 }
 
 function initFeaturedCarousel() {
-
   featuredIndex = 0;
   updateFeaturedPosition();
   startFeaturedAutoSlide();
@@ -2034,7 +2046,6 @@ function initFeaturedCarousel() {
 }
 
 function startFeaturedCountdown() {
-
   setInterval(() => {
 
     document.querySelectorAll(".featured-countdown")
@@ -2081,6 +2092,7 @@ function startFeaturedCountdown() {
   }, 1000);
 }
 
+// LOAD TOP-SELLING PRODUCTS
 function loadTopProducts() {
   fetch("/api/products/top-selling")
     .then(res => res.json())
@@ -2089,54 +2101,59 @@ function loadTopProducts() {
       const container = document.getElementById("topProducts");
       if (!container) return;
 
-      if (!container.dataset.initialized) {
+      const newHTML = data.map((p, index) => {
 
-        container.innerHTML = data.map(p => `
-          <div class="mini-card ${p.quantity === 0 ? 'sold-out' : ''}"
-               data-product-id="${p._id}"
-               onclick="${p.quantity === 0 ? '' : `viewProduct('${p._id}')`}">
+        let badge = "";
+        if (index === 0) {
+          badge = `<div class="top-badge gold">
+                    <i class="fa-solid fa-trophy" style="color: rgb(255, 212, 59);"></i> Best Seller</div>`;
+        }
+        else if (index === 1) {
+          badge = `<div class="top-badge silver">
+                    <i class="fa-solid fa-star" style="color: rgb(255, 212, 59);"></i> Popular Pick</div>`;
+        }
+        else if (index === 2) {
+          badge = `<div class="top-badge bronze">
+                    <i class="fa-solid fa-fire" style="color: rgb(255, 212, 59);"></i> Customer Favorite</div>`;
+        }
 
-            <div class="mini-img-wrapper">
-              <img src="${p.image_url || p.images?.[0]}">
+        return `
+        <div class="mini-card ${p.quantity === 0 ? 'sold-out' : ''}"
+             data-product-id="${p._id}"
+             onclick="${p.quantity === 0 ? '' : `viewProduct('${p._id}')`}">
 
-              ${p.quantity === 0
-                ? `<div class="stock-overlay">Out Of Stock</div>`
-                : ``}
-            </div>
+          <div class="mini-img-wrapper">
+            ${badge}
+            <img src="${p.image_url || p.images?.[0]}">
 
-            <div class="mini-info">
-              <div>${p.name}</div>
-              <div class="category">${titleCase(p.category)}</div>
+            ${p.quantity === 0
+              ? `<div class="stock-overlay">Out Of Stock</div>`
+              : ``}
+          </div>
 
-              <div class="price"
-                   id="top-price-${p._id}">
-                ${renderPriceHTML(p)}
-              </div>
+          <div class="mini-info">
+            <div>${p.name}</div>
+            <div class="category">${titleCase(p.category)}</div>
 
+            <div class="price" id="top-price-${p._id}">
+              ${renderPriceHTML(p)}
             </div>
           </div>
-        `).join("");
+        </div>
+        `;
 
-        container.dataset.initialized = "true";
+      }).join("");
+
+      if (newHTML === topProductsHTMLCache) {
         return;
       }
 
-      data.forEach(p => {
-
-        const priceEl =
-          document.getElementById(`top-price-${p._id}`);
-
-        if (!priceEl) return;
-
-        const newHTML = renderPriceHTML(p);
-
-        if (priceEl.innerHTML !== newHTML) {
-          priceEl.innerHTML = newHTML;
-        }
-      });
+      topProductsHTMLCache = newHTML;
+      container.innerHTML = newHTML;
     });
 }
 
+// LOAD NEW-ARRIVAL PRODUCTS
 function loadNewArrivals() {
   fetch("/api/products/new-arrivals")
     .then(res => res.json())
@@ -2198,6 +2215,19 @@ function scrollNewArrivals(direction) {
 
   container.scrollBy({
     left: direction * scrollAmount,
+    behavior: "smooth"
+  });
+}
+
+function scrollToCategory() {
+  const el = document.getElementById("categorySection");
+  if (!el) return;
+
+  const offset = 50;
+  const y = el.getBoundingClientRect().top + window.pageYOffset - offset;
+
+  window.scrollTo({
+    top: y,
     behavior: "smooth"
   });
 }
