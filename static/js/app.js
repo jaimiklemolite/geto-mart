@@ -13,30 +13,6 @@ function titleCase(str) {
     .join(" ");
 }
 
-// function renderPriceHTML(p) {
-//   if (p.offer_price || p.is_discount_active) {
-
-//     const offer = p.offer_price || p.final_price;
-//     const original = p.original_price || p.price;
-//     const discount = p.discount_percent || "";
-
-//     return `
-//       <span class="offer-price">
-//         ₹${offer.toLocaleString("en-IN")}
-//       </span>
-//       <span class="original-price">
-//         ₹${original.toLocaleString("en-IN")}
-//       </span>
-//       ${
-//         discount
-//           ? `<span class="discount-badge">${discount}% OFF</span>`
-//           : ""
-//       }
-//     `;
-//   }
-//   return `₹${p.price.toLocaleString("en-IN")}`;
-// }
-
 function renderPriceHTML(p) {
   const finalPrice = p.final_price || p.offer_price || p.price;
   const original = p.original_price || p.price;
@@ -70,8 +46,8 @@ function renderPriceHTML(p) {
           }
           ${
             memberDiscount
-              ? `<span class="member-badge ${memberPlan}">
-                  ${memberPlan.toUpperCase()} Member
+              ? `<span class="member-badge ${memberPlan}" title="Extra ${memberDiscount}% member discount applied">
+                  ${memberPlan.toUpperCase()} MEMBER
                 </span>`
               : ""
           }
@@ -1141,8 +1117,7 @@ function filterByCategory(categoryName) {
 
   updateResultsCount(filtered.length, true);
   updateResetButtonVisibility("mainDashboard");
-
-  window.scrollTo({ top: 2350, behavior: "smooth" });
+  scrollWithOffset("categorySection");
 }
 
 function loadDashboardCategories() {
@@ -1957,6 +1932,27 @@ function loadFeaturedProducts() {
       const container = document.getElementById("featuredProducts");
       if (!container) return;
 
+      if (!data || data.length === 0) {
+        container.innerHTML = `
+          <div class="no-featured-message">
+            <div class="no-featured-icon">
+              <i class="fa-solid fa-gift"></i>
+            </div>
+
+            <h3>No Live Campaign Right Now</h3>
+            <p>Check out our latest products instead.</p>
+
+            <button class="browse-btn" onclick="scrollWithOffset('newArrivalsSection')">
+              Browse Products
+            </button>
+          </div>
+        `;
+
+        document.querySelectorAll(".featured-arrow")
+          .forEach(a => a.style.display = "none");
+        return;
+      }
+
       const newHTML = data.map(p => `
         <div class="editorial-card"
             onclick="viewProduct('${p._id}')">
@@ -2265,11 +2261,10 @@ function scrollNewArrivals(direction) {
   });
 }
 
-function scrollToCategory() {
-  const el = document.getElementById("categorySection");
+function scrollWithOffset(elementId, offset = 50) {
+  const el = document.getElementById(elementId);
   if (!el) return;
 
-  const offset = 50;
   const y = el.getBoundingClientRect().top + window.pageYOffset - offset;
 
   window.scrollTo({

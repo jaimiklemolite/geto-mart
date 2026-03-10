@@ -28,6 +28,7 @@ function loadCart() {
       let membershipPercent = 0;
       let campaignPercent = 0;
       let totalAmount = 0;
+      let shippingCost = data.shipping_cost ?? 1000;
       let discountBreakdown = [];
 
       itemsDiv.innerHTML = data.items.map(item => {
@@ -146,10 +147,22 @@ function loadCart() {
       }
 
       <hr>
+      <div class="cart-summary-item">
+        <span>Shipping Charges</span>
+        <span>
+          ${
+            shippingCost === 0
+            ? `<span style="color:#16a34a;font-weight:600;margin-right:6px">FREE</span>
+              <span style="text-decoration:line-through;color:#9ca3af">₹ 1,000</span>`
+            : `₹ ${shippingCost.toLocaleString("en-IN")}`
+          }
+        </span>
+      </div>
 
+      <hr>
       <div class="cart-summary-total">
         <span>Total (Including Shipping)</span>
-        <span>₹ ${totalAmount.toLocaleString("en-IN")}</span>
+        <span>₹ ${(totalAmount + shippingCost).toLocaleString("en-IN")}</span>
       </div>
 
       ${

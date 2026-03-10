@@ -88,7 +88,6 @@ def profile():
 
         if membership["expires_at"] < datetime.utcnow():
 
-            # downgrade to free plan instead of removing membership
             mongo.db.users.update_one(
                 {"_id": ObjectId(user_id)},
                 {
@@ -128,6 +127,7 @@ def profile():
             "order_number": o.get("order_number", str(o["_id"])),
             "created_at": o["created_at"].isoformat(),
             "order_total": order_total,
+            "grand_total": o.get("grand_total", order_total),
             "total_items": total_items,
             "status": o["status"],
             "items": o["items"],
@@ -157,11 +157,22 @@ def get_all_users():
             "user_id": user["_id"]
         })
 
+        membership = user.get("membership", {})
+        plan = membership.get("plan", "free")
+
+        expiry = membership.get("expires_at")
+        expiry_str = None
+
+        if expiry:
+            expiry_str = expiry.strftime("%d %b %Y")
+
         users.append({
             "id": user["_id"],
             "username": user.get("username"),
             "email": user["email"],
             "role": user["role"],
+            "membership_plan": plan.upper(),
+            "membership_expiry": expiry_str,
             "order_count": order_count
         })
 

@@ -31,16 +31,20 @@ function renderUsersTable(users) {
       <tr>
         <th>Username</th>
         <th>Email</th>
-        <th>Orders</th>
         <th>Role</th>
+        <th>Membership</th>
+        <th>Expires At</th>
+        <th>Orders</th>
       </tr>
 
       ${users.map(u => `
         <tr>
           <td>${u.username}</td>
           <td>${u.email}</td>
-          <td><b>${u.role === "admin" ? "–" : u.order_count}</b></td>
           <td>${capitalizeFirstLetter(u.role)}</td>
+          <td>${u.role === "admin" ? "–" : u.membership_plan}</td>
+          <td>${u.role === "admin" ? "–" : u.membership_expiry || "–"}</td>
+          <td><b>${u.role === "admin" ? "–" : u.order_count}</b></td>
         </tr>
       `).join("")}
     </table>

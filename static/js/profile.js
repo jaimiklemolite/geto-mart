@@ -17,34 +17,47 @@ fetch("/api/users/profile", {
 
   const profileInfo = document.getElementById("profileInfo");
   if (profileInfo) {
+
+    let membershipHTML = "";
+    if(user.role !== "admin"){
+      membershipHTML = `
+        <p><b>Membership:</b>
+          <span id="membershipText">
+            ${(data.membership?.plan || "free").toUpperCase()}
+          </span>
+        </p>
+        ${
+          data.membership?.expires_at
+          ? (() => {
+              const expiry = new Date(data.membership.expires_at);
+
+              const formatted = expiry.toLocaleDateString("en-IN",{
+                day:"2-digit",
+                month:"short",
+                year:"numeric"
+              });
+
+              const today = new Date();
+              const diffTime = expiry - today;
+
+              const remainingDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+              return `<p class="membership-expiry">
+                        <b>Valid Until:</b> ${formatted}
+                      </p>
+                      <p class="membership-remaining">
+                        Remaining: ${remainingDays} days
+                      </p>`;
+          })()
+          : ""
+        }
+      `;
+    }
+
     profileInfo.innerHTML = `
-      <p><b>Username:</b> ${user.username || "-"}</p>
-      <p><b>Email:</b> ${user.email}</p>
-      <p><b>Membership:</b>
-        <span id="membershipText">
-          ${(data.membership?.plan || "free").toUpperCase()}
-        </span>
-      </p>
-      ${
-        data.membership?.expires_at
-        ? (() => {
-
-            const expiry = new Date(data.membership.expires_at);
-
-            if (isNaN(expiry.getTime())) return "";
-
-            const formatted = expiry.toLocaleDateString("en-IN",{
-              day:"2-digit",
-              month:"short",
-              year:"numeric"
-            });
-
-            return `<p class="membership-expiry">
-                      <b>Valid Until:</b> ${formatted}
-                    </p>`;
-        })()
-        : ""
-      }
+        <p><b>Username:</b> ${titleCase(user.username || "-")}</p>
+        <p><b>Email:</b> ${user.email}</p>
+        ${membershipHTML}
     `;
   }
 
@@ -140,6 +153,51 @@ function buyMembership(plan){
     const membershipText = document.getElementById("membershipText");
     if(membershipText){
       membershipText.textContent = plan.toUpperCase();
+    }
+
+    if(data.expires_at){
+
+      const expiry = new Date(data.expires_at);
+
+      const formatted = expiry.toLocaleDateString("en-IN",{
+        day:"2-digit",
+        month:"short",
+        year:"numeric"
+      });
+
+      const today = new Date();
+      const diffTime = expiry - today;
+
+      const remainingDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      let expiryElement = document.querySelector(".membership-expiry");
+      let remainingElement = document.querySelector(".membership-remaining");
+
+      if(!expiryElement){
+
+        expiryElement = document.createElement("p");
+        expiryElement.className = "membership-expiry";
+        expiryElement.innerHTML = `<b>Valid Until:</b> ${formatted}`;
+
+        membershipText.parentElement.insertAdjacentElement("afterend", expiryElement);
+
+      }else{
+
+        expiryElement.innerHTML = `<b>Valid Until:</b> ${formatted}`;
+      }
+
+      if(!remainingElement){
+
+        remainingElement = document.createElement("p");
+        remainingElement.className = "membership-remaining";
+        remainingElement.innerHTML = `Remaining: ${remainingDays} days`;
+
+        expiryElement.insertAdjacentElement("afterend", remainingElement);
+
+      }else{
+
+        remainingElement.innerHTML = `Remaining: ${remainingDays} days`;
+      }
     }
     updateMembershipButtons(plan);
   })

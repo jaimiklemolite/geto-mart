@@ -95,7 +95,23 @@ def get_cart():
                 "image_url": product.get("image_url")
             })
 
-    return jsonify({"items": items}), 200
+    shipping_cost = 1000
+
+    user = mongo.db.users.find_one({"_id": user_id})
+    membership = user.get("membership") if user else None
+
+    from datetime import datetime
+    now = datetime.utcnow()
+
+    if membership:
+        expiry = membership.get("expires_at")
+        if expiry and expiry > now and membership.get("free_shipping"):
+            shipping_cost = 0
+
+    return jsonify({
+        "items": items,
+        "shipping_cost": shipping_cost
+    }), 200
 
 @cart_bp.route("/update", methods=["PUT"])
 @login_required()

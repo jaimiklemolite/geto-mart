@@ -118,7 +118,7 @@ function renderOrders(container, orders) {
               <p><strong>Order Date:</strong> ${new Date(order.created_at).toLocaleDateString()}</p>
               <p><strong>Total Items:</strong> ${order.total_items}</p>
               <p class="order-total" style="font-weight: 500;color: #0f766e;">
-                <strong>Order Total:</strong> ₹${order.order_total?.toLocaleString("en-IN") || 0}
+                <strong>Order Total:</strong> ₹${order.grand_total?.toLocaleString("en-IN") || 0}
               </p>
             </div>
             <div class="order-status-label">

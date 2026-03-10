@@ -186,6 +186,44 @@ body > *:not(.app-footer) {
   width: 100%;
 }
 
+.no-featured-message{
+  width: 100%;
+  padding: 20px 20px;
+  text-align: center;
+  background: #f9fafb;
+  border-radius: 10px;
+}
+
+.no-featured-icon{
+  font-size: 40px;
+  color: #0f766e;
+  margin-bottom: 10px;
+}
+
+.no-featured-message h3{
+  margin: 5px 0;
+  font-size: 20px;
+}
+
+.no-featured-message p{
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.browse-btn{
+  padding: 10px 18px;
+  background: #0f766e;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.browse-btn:hover{
+  background: #115e59;
+}
+
 .featured-grid {
   display: flex;
   gap: 20px;
@@ -255,6 +293,7 @@ body > *:not(.app-footer) {
   gap: 16px;
   overflow-x: auto;
   padding-bottom: 10px;
+  scroll-behavior: smooth;
 }
 
 .horizontal-scroll::-webkit-scrollbar {
@@ -2043,6 +2082,18 @@ select:focus {
   border-radius: 12px;
   height: fit-content;
   box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+}
+
+.membership-expiry{
+  margin-top:5px;
+  color:#2563eb;
+  font-weight:500;
+}
+
+.membership-remaining{
+  font-size:13px;
+  color:#16a34a;
+  margin-top:2px;
 }
 
 /* Membership Section Grid */
