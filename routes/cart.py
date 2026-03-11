@@ -95,7 +95,8 @@ def get_cart():
                 "image_url": product.get("image_url")
             })
 
-    shipping_cost = 1000
+    original_shipping_cost = 1000
+    shipping_cost = original_shipping_cost
 
     user = mongo.db.users.find_one({"_id": user_id})
     membership = user.get("membership") if user else None
@@ -110,7 +111,8 @@ def get_cart():
 
     return jsonify({
         "items": items,
-        "shipping_cost": shipping_cost
+        "shipping_cost": shipping_cost,
+        "original_shipping_cost": original_shipping_cost
     }), 200
 
 @cart_bp.route("/update", methods=["PUT"])

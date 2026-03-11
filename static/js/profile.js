@@ -26,6 +26,25 @@ fetch("/api/users/profile", {
             ${(data.membership?.plan || "free").toUpperCase()}
           </span>
         </p>
+
+        ${
+          data.membership?.purchased_at
+          ? (() => {
+              const purchased = new Date(data.membership.purchased_at);
+
+              const formatted = purchased.toLocaleString("en-IN",{
+                day:"2-digit",
+                month:"short",
+                year:"numeric"
+              });
+
+              return `<p class="membership-purchased">
+                        <b>Purchased On:</b> ${formatted}
+                      </p>`;
+            })()
+          : ""
+        }
+
         ${
           data.membership?.expires_at
           ? (() => {
@@ -159,7 +178,7 @@ function buyMembership(plan){
 
       const expiry = new Date(data.expires_at);
 
-      const formatted = expiry.toLocaleDateString("en-IN",{
+      const formattedExpiry = expiry.toLocaleDateString("en-IN",{
         day:"2-digit",
         month:"short",
         year:"numeric"
@@ -167,7 +186,6 @@ function buyMembership(plan){
 
       const today = new Date();
       const diffTime = expiry - today;
-
       const remainingDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
       let expiryElement = document.querySelector(".membership-expiry");
@@ -177,28 +195,50 @@ function buyMembership(plan){
 
         expiryElement = document.createElement("p");
         expiryElement.className = "membership-expiry";
-        expiryElement.innerHTML = `<b>Valid Until:</b> ${formatted}`;
-
         membershipText.parentElement.insertAdjacentElement("afterend", expiryElement);
-
-      }else{
-
-        expiryElement.innerHTML = `<b>Valid Until:</b> ${formatted}`;
       }
+
+      expiryElement.innerHTML = `<b>Valid Until:</b> ${formattedExpiry}`;
 
       if(!remainingElement){
 
         remainingElement = document.createElement("p");
         remainingElement.className = "membership-remaining";
-        remainingElement.innerHTML = `Remaining: ${remainingDays} days`;
-
         expiryElement.insertAdjacentElement("afterend", remainingElement);
-
-      }else{
-
-        remainingElement.innerHTML = `Remaining: ${remainingDays} days`;
       }
+
+      remainingElement.innerHTML = `Remaining: ${remainingDays} days`;
     }
+
+    if(data.purchased_at){
+
+      const purchased = new Date(data.purchased_at);
+
+      const formattedPurchased = purchased.toLocaleString("en-IN",{
+        day:"2-digit",
+        month:"short",
+        year:"numeric"
+      });
+
+      let purchasedElement = document.querySelector(".membership-purchased");
+
+      if(!purchasedElement){
+
+        purchasedElement = document.createElement("p");
+        purchasedElement.className = "membership-purchased";
+
+        const expiryElement = document.querySelector(".membership-expiry");
+
+        if(expiryElement){
+          expiryElement.insertAdjacentElement("beforebegin", purchasedElement);
+        }else{
+          membershipText.parentElement.insertAdjacentElement("afterend", purchasedElement);
+        }
+      }
+
+      purchasedElement.innerHTML = `<b>Purchased On:</b> ${formattedPurchased}`;
+    }
+
     updateMembershipButtons(plan);
   })
   .catch(()=>{

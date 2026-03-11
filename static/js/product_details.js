@@ -259,7 +259,7 @@ function loadProductDetails(productId) {
             }
 
             if (text) {
-              text.textContent = "Product Added To Your Wishlist";
+              text.textContent = "Added to Wishlist";
             }
           }
         });

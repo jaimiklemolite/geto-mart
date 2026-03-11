@@ -19,7 +19,8 @@ def buy_membership():
 
     config = MEMBERSHIP_PLANS[plan]
 
-    expiry = datetime.utcnow() + timedelta(days=config["duration_days"])
+    now = datetime.utcnow()
+    expiry = now + timedelta(days=config["duration_days"])
 
     mongo.db.users.update_one(
         {"_id": ObjectId(session["user_id"])},
@@ -30,6 +31,7 @@ def buy_membership():
                     "discount": config["discount"],
                     "free_shipping": config["free_shipping"],
                     "early_campaign_hours": config["early_campaign_hours"],
+                    "purchased_at": now,
                     "expires_at": expiry
                 }
             }
@@ -39,5 +41,6 @@ def buy_membership():
     return jsonify({
         "success": True,
         "plan": plan,
+        "purchased_at": now.isoformat(),
         "expires_at": expiry.isoformat()
     })

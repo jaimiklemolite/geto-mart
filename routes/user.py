@@ -82,32 +82,6 @@ def profile():
     user = mongo.db.users.find_one(
         {"_id": ObjectId(user_id)}
     )
-    membership = user.get("membership")
-
-    if membership and membership.get("expires_at"):
-
-        if membership["expires_at"] < datetime.utcnow():
-
-            mongo.db.users.update_one(
-                {"_id": ObjectId(user_id)},
-                {
-                    "$set": {
-                        "membership.plan": "free",
-                        "membership.discount": 0,
-                        "membership.free_shipping": False,
-                        "membership.early_campaign_hours": 0,
-                        "membership.expires_at": None
-                    }
-                }
-            )
-
-            user["membership"] = {
-                "plan": "free",
-                "discount": 0,
-                "free_shipping": False,
-                "early_campaign_hours": 0,
-                "expires_at": None
-            }
 
     if not user:
         session.clear()
@@ -137,8 +111,12 @@ def profile():
 
     membership = user.get("membership", {})
 
-    if membership and membership.get("expires_at"):
-        membership["expires_at"] = membership["expires_at"].isoformat()
+    if membership:
+        if membership.get("expires_at"):
+            membership["expires_at"] = membership["expires_at"].isoformat()
+
+        if membership.get("purchased_at"):
+            membership["purchased_at"] = membership["purchased_at"].isoformat()
 
     return jsonify({
         "user": user,
@@ -161,10 +139,25 @@ def get_all_users():
         plan = membership.get("plan", "free")
 
         expiry = membership.get("expires_at")
+        purchased = membership.get("purchased_at")
+
         expiry_str = None
+        purchased_str = None
+        status = "Free"
+
+        if plan != "free":
+            status = "Expired"
+
+        now = datetime.utcnow()
+
+        if purchased:
+            purchased_str = purchased.strftime("%d %b %Y")
 
         if expiry:
             expiry_str = expiry.strftime("%d %b %Y")
+
+            if expiry > now:
+                status = "Active"
 
         users.append({
             "id": user["_id"],
@@ -172,7 +165,9 @@ def get_all_users():
             "email": user["email"],
             "role": user["role"],
             "membership_plan": plan.upper(),
+            "membership_purchased": purchased_str,
             "membership_expiry": expiry_str,
+            "membership_status": status,
             "order_count": order_count
         })
 
