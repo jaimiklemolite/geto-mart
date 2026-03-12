@@ -156,6 +156,8 @@ def get_related_products(product_id):
             "discount_percent": p.get("discount_percent"),
             "final_price": p.get("final_price"),
             "is_discount_active": p.get("is_discount_active"),
+            "member_discount": p.get("member_discount", 0),
+            "membership_plan": p.get("membership_plan", ""),
             "image_url": (
                 p["images"][0]
                 if isinstance(p.get("images"), list) and p["images"]

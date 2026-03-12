@@ -33,7 +33,9 @@ function renderUsersTable(users) {
         <th>Email</th>
         <th>Role</th>
         <th>Membership</th>
+        <th>Purchased On</th>
         <th>Expires At</th>
+        <th>Status</th>
         <th>Orders</th>
       </tr>
 
@@ -43,7 +45,13 @@ function renderUsersTable(users) {
           <td>${u.email}</td>
           <td>${capitalizeFirstLetter(u.role)}</td>
           <td>${u.role === "admin" ? "–" : u.membership_plan}</td>
+          <td>${u.role === "admin" ? "–" : u.membership_purchased || "–"}</td>
           <td>${u.role === "admin" ? "–" : u.membership_expiry || "–"}</td>
+          <td>
+            <span class="membership-status ${u.membership_status.toLowerCase()}">
+              ${u.role === "admin" ? "–" : u.membership_status}
+            </span>
+          </td>
           <td><b>${u.role === "admin" ? "–" : u.order_count}</b></td>
         </tr>
       `).join("")}

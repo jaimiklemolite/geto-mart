@@ -2194,6 +2194,21 @@ select:focus {
   border-top:4px solid #6366f1;
 }
 
+/* Membership Status Admin */
+.membership-status.active{
+  color:#16a34a;
+  font-weight:600;
+}
+
+.membership-status.expired{
+  color:#dc2626;
+  font-weight:600;
+}
+
+.membership-status.free{
+  color:#6b7280;
+}
+
 .order-card {
   background: white;
   padding: 14px;
@@ -2441,13 +2456,13 @@ tr:hover {
 #users td:nth-child(1) { width: 7%; }
 
 #users th:nth-child(2),
-#users td:nth-child(2) { width: 25%; }
+#users td:nth-child(2) { width: 20%; }
 
 #users th:nth-child(3),
-#users td:nth-child(3) { width: 20%; }
+#users td:nth-child(3) { width: 10%; }
 
 #users th:nth-child(4),
-#users td:nth-child(4) { width: 20%; }
+#users td:nth-child(4) { width: 15%; }
 
 /* ADMIN ORDER LAYOUT */
 .admin-order-wrapper {
