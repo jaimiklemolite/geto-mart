@@ -99,7 +99,7 @@ async function showCategoryInfo(categoryId) {
 
   } catch (err) {
     console.error("Category info load error:", err);
-    showToast("Failed to load category info", "error");
+    showToast("Failed To Load Category Info", "error");
   }
 }
 
@@ -114,7 +114,6 @@ function slideOrders(dir) {
 
   document.getElementById("ordersLabel").innerText =
     ordersData[ordersIndex].label;
-
   document.getElementById("ordersValue").innerText =
     ordersData[ordersIndex].value;
 }
@@ -126,7 +125,6 @@ function slideSales(dir) {
 
   document.getElementById("salesLabel").innerText =
     salesData[salesIndex].label;
-
   document.getElementById("salesValue").innerText =
     salesData[salesIndex].value;
 }

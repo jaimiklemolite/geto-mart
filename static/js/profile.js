@@ -235,7 +235,6 @@ function buyMembership(plan){
           membershipText.parentElement.insertAdjacentElement("afterend", purchasedElement);
         }
       }
-
       purchasedElement.innerHTML = `<b>Purchased On:</b> ${formattedPurchased}`;
     }
 

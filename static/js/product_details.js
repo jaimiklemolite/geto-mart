@@ -449,7 +449,6 @@ function loadRelatedProducts(productId) {
               <button onclick="viewProduct('${p.id}')">
                 View
               </button>
-
               ${window.USER_ROLE !== "admin" ? `
                 <button onclick="addToCart('${p.id}')">
                   Add to Cart
@@ -494,7 +493,6 @@ document.addEventListener("DOMContentLoaded", () => {
     console.error("❌ Product ID missing in body dataset");
     return;
   }
-
   loadProductDetails(productId);
   loadRelatedProducts(productId);
 

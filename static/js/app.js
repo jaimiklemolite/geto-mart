@@ -184,7 +184,7 @@ function login() {
         localStorage.removeItem("pendingCartProduct");
         if (!res.ok) {
           const data = await res.json().catch(() => ({}));
-          showToast(data.message || "Cannot add to cart", "error", 3000, true);
+          showToast(data.message || "Cannot Add To Cart", "error", 3000, true);
           window.location.href = "/dashboard";
           return;
         }
@@ -1286,7 +1286,7 @@ function addToCart(productId) {
     }
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
-      showToast(data.message || "Cannot add to cart", "error");
+      showToast(data.message || "Cannot Add To Cart", "error");
       return;
     }
     showToast("Product Added To Your Cart Successfully.", "success");
@@ -1704,19 +1704,16 @@ function updateCampaignTabCounts(data) {
 }
 
 function switchCampaignTab(tab, btn) {
-
   currentCampaignTab = tab;
 
   document.querySelectorAll(".campaign-tab")
     .forEach(t => t.classList.remove("active"));
-
   btn.classList.add("active");
 
   renderCampaignCards(tab);
 }
 
 function renderCampaignCards(filter = currentCampaignTab) {
-
   const container = document.getElementById("campaignList");
   const messageEl = document.getElementById("campaignTabMessage");
   if (!container) return;
@@ -1755,21 +1752,17 @@ function renderCampaignCards(filter = currentCampaignTab) {
         </div>
 
         <div class="campaign-actions">
-
           <button onclick="editCampaign('${c.id}')">
             Edit
           </button>
-
           ${
             c.status !== "EXPIRED"
               ? `<button onclick="stopCampaign('${c.id}')">Stop</button>`
               : ""
           }
-
           <span class="campaign-status ${c.status.toLowerCase()}">
             ${c.status}
           </span>
-
         </div>
 
       </div>
@@ -1794,7 +1787,6 @@ function renderCampaignCards(filter = currentCampaignTab) {
 }
 
 function getCampaignStatus(c) {
-
   const now = new Date(Date.now());
   const start = new Date(c.start + "Z");
   const end = new Date(c.end + "Z");
@@ -1805,7 +1797,6 @@ function getCampaignStatus(c) {
 }
 
 function startCampaignCountdown() {
-
   if (campaignTimer) clearInterval(campaignTimer);
 
   campaignTimer = setInterval(() => {

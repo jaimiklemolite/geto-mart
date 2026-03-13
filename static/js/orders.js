@@ -31,7 +31,6 @@ function filterOrdersByStatus() {
   if (status !== "All") {
     filtered = filtered.filter(o => o.status === status);
   }
-
   if (search) {
     filtered = filtered.filter(order =>
       order.id.toLowerCase().includes(search) ||

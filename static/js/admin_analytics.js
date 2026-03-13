@@ -11,7 +11,6 @@ function buildQuery() {
 
 function onRangeChange() {
   const val = document.getElementById("rangeSelect").value;
-
   const startInput = document.getElementById("startDate");
   const endInput = document.getElementById("endDate");
 
