@@ -2151,28 +2151,28 @@ function loadTopProducts() {
         }
 
         return `
-        <div class="mini-card ${p.quantity === 0 ? 'sold-out' : ''}"
-             data-product-id="${p._id}"
-             onclick="${p.quantity === 0 ? '' : `viewProduct('${p._id}')`}">
+          <div class="mini-card ${p.quantity === 0 ? 'sold-out' : ''}"
+            data-product-id="${p._id}"
+            onclick="${p.quantity === 0 ? '' : `viewProduct('${p._id}')`}">
 
-          <div class="mini-img-wrapper">
-            ${badge}
-            <img src="${p.image_url || p.images?.[0]}">
+            <div class="mini-img-wrapper">
+              ${badge}
+              <img src="${p.image_url || p.images?.[0]}">
 
-            ${p.quantity === 0
-              ? `<div class="stock-overlay">Out Of Stock</div>`
-              : ``}
-          </div>
+              ${p.quantity === 0
+                ? `<div class="stock-overlay">Out Of Stock</div>`
+                : ``}
+            </div>
 
-          <div class="mini-info">
-            <div>${p.name}</div>
-            <div class="category">${titleCase(p.category)}</div>
+            <div class="mini-info">
+              <div>${p.name}</div>
+              <div class="category">${titleCase(p.category)}</div>
 
-            <div class="price" id="top-price-${p._id}">
-              ${renderPriceHTML(p)}
+              <div class="price" id="top-price-${p._id}">
+                ${renderPriceHTML(p)}
+              </div>
             </div>
           </div>
-        </div>
         `;
 
       }).join("");
@@ -2195,9 +2195,16 @@ function loadNewArrivals() {
       if (!container) return;
 
       container.innerHTML = data.map(p => `
-        <div class="editorial-card"
-             onclick="viewProduct('${p._id}')">
-          <img src="${p.image_url || p.images?.[0]}" />
+        <div class="editorial-card ${p.quantity === 0 ? 'sold-out' : ''}"
+            onclick="viewProduct('${p._id}')">
+
+          <div class="editorial-img-wrapper">
+            <img src="${p.image_url || p.images?.[0]}" />
+            ${p.quantity === 0
+              ? `<div class="stock-overlay">Out Of Stock</div>`
+              : ``}
+          </div>
+
           <div class="editorial-info">
             <h4>${p.name}</h4>
             <div class="category">${titleCase(p.category)}</div>

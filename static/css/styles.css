@@ -321,7 +321,7 @@ body > *:not(.app-footer) {
 .top-badge {
   position: absolute;
   top: 8px;
-  left: 8px;
+  left: 10px;
   padding: 4px 10px;
   font-size: 11px;
   font-weight: 600;
@@ -379,8 +379,8 @@ body > *:not(.app-footer) {
 
 .stock-overlay {
   position: absolute;
-  top: 12px;
-  left: 12px;
+  top: 8px;
+  right: 10px;
   background: #111;
   color: white;
   font-size: 11px;
@@ -414,11 +414,19 @@ body > *:not(.app-footer) {
   position:relative;
 }
 
+.editorial-img-wrapper {
+  position: relative;
+}
+
 .editorial-card img {
   width: 100%;
   height: 300px;
   object-fit: cover;
   border-radius: 6px;
+}
+
+.editorial-card.sold-out {
+  opacity: 0.6;
 }
 
 /* LIMITED BADGE */
