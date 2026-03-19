@@ -215,7 +215,6 @@ function renderAdminStatusControl(order) {
 function filterOrdersByCategory() {
   const selectedCategory =
     document.getElementById("orderCategoryFilter").value;
-
   const selectedStatus =
     document.getElementById("orderStatusFilter").value;
 
@@ -224,7 +223,6 @@ function filterOrdersByCategory() {
   if (selectedStatus !== "All") {
     filtered = filtered.filter(o => o.status === selectedStatus);
   }
-
   if (selectedCategory !== "All") {
     filtered = filtered.filter(order =>
       order.items.some(item => item.category === selectedCategory)

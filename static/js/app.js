@@ -628,7 +628,6 @@ function addProduct() {
         showToast("Failed To Add Product", "error");
         return;
       }
-
       showToast("Product Added Successfully", "success");
       clearForm();
       loadProducts(true);
@@ -706,7 +705,6 @@ function deleteProduct(productId) {
           showToast("Failed To Delete Product", "error");
           return;
         }
-
         showToast("Product Deleted Successfully", "error");
         loadProducts(true);
       })
@@ -764,7 +762,6 @@ function clearImagePreview() {
   if (preview) {
     preview.innerHTML = "";
   }
-
   const imagesInput = document.getElementById("images");
   if (imagesInput) {
     imagesInput.value = "";
@@ -784,7 +781,7 @@ function clearForm() {
     categorySelect.disabled = false;
     categorySelect.classList.remove("locked-input");
   }
-  
+
   const groupSelect = document.getElementById("detailGroupSelect");
   if (groupSelect) {
     groupSelect.style.display = "inline-block";
@@ -1575,10 +1572,8 @@ function loadCampaignCategories() {
 }
 
 function loadCampaignProductsByCategory() {
-
   const categoryId =
     document.getElementById("campaignCategory").value;
-
   const productSelect =
     document.getElementById("campaignProduct");
 
@@ -1683,7 +1678,6 @@ function loadCampaigns() {
 }
 
 function updateCampaignTabCounts(data) {
-
   const counts = {
     ALL: data.length,
     LIVE: 0,
@@ -1800,7 +1794,6 @@ function startCampaignCountdown() {
   if (campaignTimer) clearInterval(campaignTimer);
 
   campaignTimer = setInterval(() => {
-
     let needReload = false;
 
     document.querySelectorAll(".countdown")
@@ -2072,7 +2065,6 @@ function initFeaturedCarousel() {
 
     if (startX - endX > 50)
       moveFeatured(1);
-
     if (endX - startX > 50)
       moveFeatured(-1);
   });
@@ -2167,7 +2159,6 @@ function loadTopProducts() {
             <div class="mini-info">
               <div>${p.name}</div>
               <div class="category">${titleCase(p.category)}</div>
-
               <div class="price" id="top-price-${p._id}">
                 ${renderPriceHTML(p)}
               </div>

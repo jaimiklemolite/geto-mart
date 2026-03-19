@@ -118,93 +118,92 @@ function loadCart() {
       const totalDiscount = campaignDiscount + membershipDiscount;
 
       summaryDiv.innerHTML = `
-      <h3>Cart Summary</h3>
-      ${data.items.map(item => {
-        const basePrice = item.original_price || item.price;
+        <h3>Cart Summary</h3>
+        ${data.items.map(item => {
+          const basePrice = item.original_price || item.price;
 
-        return `
-          <div class="cart-summary-item">
-            <span>${item.name}</span>
-            <span>₹ ${basePrice.toLocaleString("en-IN")} × ${item.qty}</span>
-          </div>
-        `;
-      }).join("")}
+          return `
+            <div class="cart-summary-item">
+              <span>${item.name}</span>
+              <span>₹ ${basePrice.toLocaleString("en-IN")} × ${item.qty}</span>
+            </div>
+          `;
+        }).join("")}
 
-      <hr>
+        <hr>
+        <div class="cart-summary-item">
+          <span>Subtotal</span>
+          <span>₹ ${subtotal.toLocaleString("en-IN")}</span>
+        </div>
 
-      <div class="cart-summary-item">
-        <span>Subtotal</span>
-        <span>₹ ${subtotal.toLocaleString("en-IN")}</span>
-      </div>
+        ${
+          totalDiscount > 0
+          ? `
+          <div class="cart-summary-item discount-line">
+            <span>Total Discount</span>
+            <span>- ₹ ${totalDiscount.toLocaleString("en-IN")}</span>
+          </div>`
+          : ""
+        }
 
-      ${
-        totalDiscount > 0
-        ? `
-        <div class="cart-summary-item discount-line">
-          <span>Total Discount</span>
-          <span>- ₹ ${totalDiscount.toLocaleString("en-IN")}</span>
-        </div>`
-        : ""
-      }
+        <hr>
+        <div class="cart-summary-item">
+          <span>Shipping Charges</span>
+          <span>
+            ${
+              shippingCost === 0
+              ? `<span style="color:#16a34a;font-weight:600;margin-right:6px">FREE</span>
+                <span style="text-decoration:line-through;color:#9ca3af">
+                  ₹ ${originalShippingCost.toLocaleString("en-IN")}
+                </span>`
+              : `₹ ${shippingCost.toLocaleString("en-IN")}`
+            }
+          </span>
+        </div>
 
-      <hr>
-      <div class="cart-summary-item">
-        <span>Shipping Charges</span>
-        <span>
-          ${
-            shippingCost === 0
-            ? `<span style="color:#16a34a;font-weight:600;margin-right:6px">FREE</span>
-              <span style="text-decoration:line-through;color:#9ca3af">
-                ₹ ${originalShippingCost.toLocaleString("en-IN")}
-              </span>`
-            : `₹ ${shippingCost.toLocaleString("en-IN")}`
-          }
-        </span>
-      </div>
+        <hr>
+        <div class="cart-summary-total">
+          <span>Total (Including Shipping)</span>
+          <span>₹ ${(totalAmount + shippingCost).toLocaleString("en-IN")}</span>
+        </div>
 
-      <hr>
-      <div class="cart-summary-total">
-        <span>Total (Including Shipping)</span>
-        <span>₹ ${(totalAmount + shippingCost).toLocaleString("en-IN")}</span>
-      </div>
+        ${
+          totalDiscount > 0
+          ? `
+          <div class="total-savings tooltip-container">
+            You saved on this order ₹ ${totalDiscount.toLocaleString("en-IN")}
+            <span class="tooltip-icon"><i class="fa-solid fa-circle-info"></i></span>
+            <div class="tooltip-box">
+              ${discountBreakdown.map(p => `
 
-      ${
-        totalDiscount > 0
-        ? `
-        <div class="total-savings tooltip-container">
-          You saved on this order ₹ ${totalDiscount.toLocaleString("en-IN")}
-          <span class="tooltip-icon"><i class="fa-solid fa-circle-info"></i></span>
-          <div class="tooltip-box">
-            ${discountBreakdown.map(p => `
+                <div class="tooltip-product">
+                  <strong>${p.name}</strong>
+                  ${
+                    p.campaign > 0
+                    ? `<div class="tooltip-line">
+                        Campaign (${p.campaignPercent}%)
+                        : ₹ ${p.campaign.toLocaleString("en-IN")}
+                      </div>`
+                    : ""
+                  }
+                  ${
+                    p.membership > 0
+                    ? `<div class="tooltip-line">
+                        Membership (${p.membershipPercent}%)
+                        : ₹ ${p.membership.toLocaleString("en-IN")}
+                      </div>`
+                    : ""
+                  }
+                </div>
+              `).join("")}
+            </div>
+          </div>`
+          : ""
+        }
 
-              <div class="tooltip-product">
-                <strong>${p.name}</strong>
-                ${
-                  p.campaign > 0
-                  ? `<div class="tooltip-line">
-                      Campaign (${p.campaignPercent}%)
-                      : ₹ ${p.campaign.toLocaleString("en-IN")}
-                    </div>`
-                  : ""
-                }
-                ${
-                  p.membership > 0
-                  ? `<div class="tooltip-line">
-                      Membership (${p.membershipPercent}%)
-                      : ₹ ${p.membership.toLocaleString("en-IN")}
-                    </div>`
-                  : ""
-                }
-              </div>
-            `).join("")}
-          </div>
-        </div>`
-        : ""
-      }
-
-      <button class="place-order-btn" onclick="placeOrder()">
-        Place Order
-      </button>
+        <button class="place-order-btn" onclick="placeOrder()">
+          Place Order
+        </button>
       `;
     });
 }

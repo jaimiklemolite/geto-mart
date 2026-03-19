@@ -73,7 +73,6 @@ async function showCategoryInfo(categoryId) {
       { label: "Total Orders", value: data.total_orders || 0 },
       { label: "Delivered Orders", value: data.delivered_orders || 0 }
     ];
-
     salesData = [
       { label: "Total Sold Qty", value: data.total_sold_qty || 0 },
       { label: "Revenue", value: `₹ ${data.revenue?.toLocaleString("en-IN") || 0}` }
@@ -177,7 +176,6 @@ function editCategory(id) {
 
       clearSpecNames();
       (cat.spec_names || []).forEach(name => addSpecNameField(name));
-
       clearDetailTitles();
       (cat.detail_titles || []).forEach(title => addDetailTitleField(title));
 

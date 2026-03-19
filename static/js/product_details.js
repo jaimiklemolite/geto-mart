@@ -122,7 +122,6 @@ function loadProductDetails(productId) {
         }
       }
 
-
       document.getElementById("pd-description").textContent = p.description;
       document.getElementById("pd-category").textContent = titleCase(p.category);
 

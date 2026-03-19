@@ -47,6 +47,8 @@ function loadWishlistPage() {
         _id: p.id
       }));
 
+      productCache = normalized;
+
       document.getElementById("wishlistEmptyState").style.display = "none";
       container.style.display = "grid";
 
