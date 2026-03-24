@@ -1,6 +1,5 @@
 from flask import Blueprint, request, jsonify, current_app 
 from bson.objectid import ObjectId
-from bson.errors import InvalidId
 from extension import mongo
 from utils import login_required
 from routes.utils import title_case, slugify

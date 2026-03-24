@@ -91,7 +91,6 @@ def place_order():
 
     now = datetime.utcnow()
 
-    # membership free shipping logic
     shipping_cost = 1000
 
     user = mongo.db.users.find_one({"_id": user_id})
