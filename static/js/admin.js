@@ -111,7 +111,7 @@ function renderOrders(orders) {
           </div>
           <p><strong>Total Items:</strong> ${order.total_items}</p>
           <p class="admin-order-total" style="font-weight: 500;color: #0f766e;">
-            <strong>Order Total:</strong> ₹${order.order_total?.toLocaleString("en-IN") || 0}
+            <strong>Order Total:</strong> ₹${order.grand_total?.toLocaleString("en-IN") || 0}
           </p>
         </div>
 

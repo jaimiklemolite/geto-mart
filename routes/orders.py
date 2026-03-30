@@ -81,7 +81,6 @@ def place_order():
             "price_at_purchase": locked_price,
             "discount_percent": product.get("discount_percent", 0),
             "is_discount_active": product.get("is_discount_active", False),
-
             "qty": qty,
             "subtotal": subtotal
         })
@@ -146,6 +145,8 @@ def get_all_orders():
             {"_id": ObjectId(o["user_id"])}
         )
         order_total = o.get("order_total", 0)
+        shipping_cost = o.get("shipping_cost", 0)
+        grand_total = o.get("grand_total", order_total + shipping_cost)
         total_items = o.get("total_items", 0)
 
         orders.append({
@@ -156,6 +157,8 @@ def get_all_orders():
             "customer_email": user.get("email", "Unknown") if user else "Unknown",
             "items": o.get("items", []),
             "order_total": order_total,
+            "shipping_cost": shipping_cost,
+            "grand_total": grand_total,
             "total_items": total_items,
             "status": o.get("status"),
         })

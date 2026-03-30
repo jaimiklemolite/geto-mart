@@ -54,6 +54,59 @@ function loadProductDetails(productId) {
         priceEl.innerHTML = newHTML;
       }
 
+      const discountBox = document.getElementById("pd-discount-box");
+      if (discountBox) {
+        const basePrice = p.original_price || p.price;
+        const campaignPrice = p.offer_price || basePrice;
+        const finalPrice = p.final_price || campaignPrice;
+
+        const campaignSaved = p.discount_percent
+          ? (basePrice - campaignPrice)
+          : 0;
+        const membershipSaved = p.member_discount
+          ? (campaignPrice - finalPrice)
+          : 0;
+        const totalSaved = campaignSaved + membershipSaved;
+        if (totalSaved > 0) {
+          discountBox.innerHTML = `
+            <div class="total-savings tooltip-container">
+              You save ₹ ${totalSaved.toLocaleString("en-IN")}
+              <span class="tooltip-icon">
+                <i class="fa-solid fa-circle-info"></i>
+              </span>
+
+              <div class="tooltip-box">
+
+                ${
+                  campaignSaved > 0
+                  ? `
+                    <div class="tooltip-line">
+                      Campaign (${p.discount_percent}%)
+                      : ₹ ${campaignSaved.toLocaleString("en-IN")}
+                    </div>
+                  `
+                  : ""
+                }
+
+                ${
+                  membershipSaved > 0
+                  ? `
+                    <div class="tooltip-line">
+                      Membership (${p.member_discount}%)
+                      : ₹ ${membershipSaved.toLocaleString("en-IN")}
+                    </div>
+                  `
+                  : ""
+                }
+
+              </div>
+            </div>
+          `;
+        } else {
+          discountBox.innerHTML = "";
+        }
+      }
+
       const timerEl = document.getElementById("pd-timer");
 
       if (timerEl) {
