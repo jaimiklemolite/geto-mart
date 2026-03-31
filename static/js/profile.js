@@ -244,3 +244,13 @@ function buyMembership(plan){
     showToast("Membership Purchase Failed","error");
   });
 }
+
+function switchProfileTab(tabId, el) {
+  document.querySelectorAll(".profile-tab")
+    .forEach(tab => tab.classList.remove("active"));
+  document.querySelectorAll(".profile-section")
+    .forEach(sec => sec.classList.remove("active"));
+  el.classList.add("active");
+
+  document.getElementById(tabId).classList.add("active");
+}

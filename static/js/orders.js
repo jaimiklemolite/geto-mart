@@ -116,8 +116,23 @@ function renderOrders(container, orders) {
             <div class="order-summary">
               <p><strong>Order Date:</strong> ${new Date(order.created_at).toLocaleDateString()}</p>
               <p><strong>Total Items:</strong> ${order.total_items}</p>
-              <p class="order-total" style="font-weight: 500;color: #0f766e;">
-                <strong>Order Total:</strong> ₹${order.grand_total?.toLocaleString("en-IN") || 0}
+              <p>
+                <strong>Subtotal:</strong>
+                ₹${order.order_total?.toLocaleString("en-IN") || 0}
+              </p>
+              <p>
+                <strong>Shipping:</strong>
+                ${
+                  order.shipping_cost === 0
+                    ? `<span style="color:#16a34a;font-weight:600">
+                        FREE (Saved ₹1000)
+                      </span>`
+                    : `₹${order.shipping_cost?.toLocaleString("en-IN") || 0}`
+                }
+              </p>
+              <p class="order-total" style="font-weight: 600;color: #0f766e;">
+                <strong>Total Paid:</strong>
+                ₹${order.grand_total?.toLocaleString("en-IN") || 0}
               </p>
             </div>
             <div class="order-status-label">

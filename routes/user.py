@@ -100,6 +100,7 @@ def profile():
             "id": str(o["_id"]),
             "order_number": o.get("order_number", str(o["_id"])),
             "created_at": o["created_at"].isoformat(),
+            "shipping_cost": o.get("shipping_cost", 0),
             "order_total": order_total,
             "grand_total": o.get("grand_total", order_total),
             "total_items": total_items,

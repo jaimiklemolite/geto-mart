@@ -110,8 +110,23 @@ function renderOrders(orders) {
             ${order.username} • ${order.customer_email}
           </div>
           <p><strong>Total Items:</strong> ${order.total_items}</p>
-          <p class="admin-order-total" style="font-weight: 500;color: #0f766e;">
-            <strong>Order Total:</strong> ₹${order.grand_total?.toLocaleString("en-IN") || 0}
+          <p>
+            <strong>Subtotal:</strong>
+            ₹${order.order_total?.toLocaleString("en-IN") || 0}
+          </p>
+          <p>
+            <strong>Shipping:</strong>
+            ${
+              (order.shipping_cost ?? 1000) === 0
+                ? `<span style="color:#16a34a;font-weight:600">
+                    FREE (₹1000)
+                  </span>`
+                : `₹${(order.shipping_cost ?? 1000).toLocaleString("en-IN")}`
+            }
+          </p>
+          <p class="admin-order-total" style="font-weight: 600;color: #0f766e;">
+            <strong>Total Paid:</strong>
+            ₹${order.grand_total?.toLocaleString("en-IN") || 0}
           </p>
         </div>
 

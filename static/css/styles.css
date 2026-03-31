@@ -2084,6 +2084,55 @@ select:focus {
 }
 
 /* PROFILE & ORDERS */
+.profile-layout {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+/* Sidebar */
+.profile-sidebar {
+  width: 220px;
+  background: #eee;
+  border-radius: 10px;
+  padding: 10px;
+  height: fit-content;
+}
+
+/* Tabs */
+.profile-tab {
+  padding: 12px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #374151;
+  transition: 0.2s;
+}
+
+.profile-tab:hover {
+  background: #e5e7eb;
+}
+
+.profile-tab.active {
+  background: #2563eb;
+  color: white;
+}
+
+/* Content */
+.profile-content {
+  flex: 1;
+}
+
+/* Sections */
+.profile-section {
+  display: none;
+}
+
+.profile-section.active {
+  display: block;
+}
+
 .profile-card{
   background: #ffffff;
   padding: 22px;
